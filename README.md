@@ -31,5 +31,6 @@ HW 3 for Database Structures course at TAU
 	-google how to maintain a database using python
 -figure out how to connect python to mydatabase
 
-
+20/2/24
+figure out how to sort and filter data we pull from rapidAPI
 
