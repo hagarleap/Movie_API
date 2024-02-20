@@ -7,13 +7,14 @@ HW 3 for Database Structures course at TAU
 	-Database: https://rapidapi.com/SAdrian/api/moviesminidatabase
  	-func ideas:
   		Ideas for complex queries:
-			2. Get actors frequently starring together: - movie besties, actors secretly dating,... (only actors over 18 years old and alive, if this info exsits)
-			4. Get actors who have worked under 5 different directors
-			5. Get movie writers who have also directed movies
-			6. Get recently released sequels with higher ratings than original
-			7 Get the worst movies published per year, month 2022 - timeline, per genre, or range of years.
-			8. Suspicious movie ratings: limit by genre, find avg amount of ratings for the genre, pick top 5 movies with highest rating from movies who's # or raters is LESS than avg
-			9. 
+			1. Get actors frequently starring together: - movie besties, actors secretly dating,... (only actors over 18 years old and alive, if this info exsits)
+			2. Get actors who have worked under 5 different directors
+			3. Get movie writers who have also directed movies
+			4. Get recently released sequels with higher ratings than original
+			5 Get the worst movies published per year, month 2022 - timeline, per genre, or range of years.
+			6. Get the main actor in the worst movie
+			7. Suspicious movie ratings: limit by genre, find avg amount of ratings for the genre, pick top 5 movies with highest rating from movies who's # or raters is LESS than avg
+			 
 			
 			Ideas for full-text queries:
 			1. Search movie titles for hero or heroes
