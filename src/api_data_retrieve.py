@@ -3,7 +3,7 @@ import requests
 url = "https://moviesdatabase.p.rapidapi.com/actors"
 
 headers = {
-	"X-RapidAPI-Key": "9e79a62e4dmsh5081d5b2b325cccp10440fjsn88c2207f5d7d",
+	"X-RapidAPI-Key": ,
 	"X-RapidAPI-Host": "moviesdatabase.p.rapidapi.com"
 }
 
