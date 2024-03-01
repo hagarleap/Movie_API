@@ -179,6 +179,9 @@ def main():
             
             movie_reader = csv.reader(movie_file)
             crew_reader = csv.reader(crew_file)
+
+            movie_reader = csv.DictReader(movie_file)
+            crew_reader = csv.DictReader(crew_file)
             
             movies_table(movie_reader, mycursor, mydb)
             Keywords_table(movie_reader, mycursor, mydb)
