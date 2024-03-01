@@ -4,22 +4,53 @@ import pandas as pd
 import csv
 
 def movies_table(reader, mycursor, mydb):
-    reader.seek(1)
-    for row in reader:     
+    for row in reader:
         try:
+            id_val = row.get('id')
+            overview_val = row.get('overview')
+            tagline_val = row.get('tagline')
+            title_val = row.get('title')
+            vote_avg_val = row.get('vote_average')
+            vote_count_val = row.get('vote_count')
+            
+            # Check for release_date
+            release_date_val = row.get('release_date')
+            if release_date_val:
+                try:
+                    release_date_val = datetime.strptime(release_date_val, '%Y-%m-%d').date()
+                except ValueError:
+                    release_date_val = None
+            else:
+                release_date_val = None
+            
+            # Check for vote_avg
+            if vote_avg_val:
+                try:
+                    vote_avg_val = float(vote_avg_val)
+                except ValueError:
+                    vote_avg_val = None
+            
+            # Check for vote_count
+            if vote_count_val:
+                try:
+                    vote_count_val = int(vote_count_val)
+                except ValueError:
+                    vote_count_val = None
+            
             mycursor.execute("INSERT INTO Movies (id, overview, release_date, tagline, title, vote_avg, vote_count) "
-                      "VALUES (%s, %s, %s, %s, %s, %s, %s)",
-                      (row['id'], row['overview'], row['release_date'], row['tagline'],
-                       row['title'], row['vote_average'], row['vote_count']))
+                             "VALUES (%s, %s, %s, %s, %s, %s, %s)",
+                             (id_val, overview_val, release_date_val, tagline_val,
+                              title_val, vote_avg_val, vote_count_val))
         except mysql.connector.IntegrityError as e:
             if e.errno == 1062:
                 continue  # Skip insertion for existing keyword ID
             else:
-                raise e  # Raise other IntegrityError exceptions        
+                raise e  # Raise other IntegrityError exceptions   
+    print("Movie table has been created successfuly")
     mydb.commit()
     
 def Keywords_table(reader_movies_csv, mycursor, mydb):
-    reader_movies_csv.seek(1)
+    #reader_movies_csv.seek(1)
     for row in reader_movies_csv:
         if row['keywords']:
             # Extract keywords data from the 'keywords' column
@@ -35,10 +66,11 @@ def Keywords_table(reader_movies_csv, mycursor, mydb):
                         continue  # Skip insertion for existing keyword ID
                     else:
                         raise e  # Raise other IntegrityError exceptions
+    print("Keyword table has been creaated successfuly")
     mydb.commit()
     
 def Movie_keywords_table(reader_movies_csv, mycursor, mydb):
-    reader_movies_csv.seek(1)
+    #reader_movies_csv.seek(1)
     for row in reader_movies_csv:
         if row['keywords']:
             # Extract keywords data from the 'keywords' column
@@ -53,6 +85,7 @@ def Movie_keywords_table(reader_movies_csv, mycursor, mydb):
                         continue  # Skip insertion for existing keyword ID
                     else:
                         raise e  # Raise other IntegrityError exceptions
+    print("Movie_keywords table has been creaated successfuly")
     mydb.commit()
     
 def genres_table(reader_movies_csv, mycursor, mydb):
@@ -72,6 +105,7 @@ def genres_table(reader_movies_csv, mycursor, mydb):
                         continue  # Skip insertion for existing genre ID
                     else:
                         raise e  # Raise other IntegrityError exceptions
+    print("Genres table has been creaated successfuly")
     mydb.commit()
     
 def Genres_movies_table(reader_movies_csv, mycursor, mydb):
@@ -92,6 +126,7 @@ def Genres_movies_table(reader_movies_csv, mycursor, mydb):
                         continue  # Skip insertion for existing genre_id, movie_id pair
                     else:
                         raise e  # Raise other IntegrityError exceptions
+    print("Genres_movies table has been creaated successfuly")
     mydb.commit()
     
 def Person_Cast_Crew_MovieCrew_MoviesActors_tables(reader, mycursor, mydb):
@@ -133,6 +168,7 @@ def insert_cast(movie_id, cast, mycursor, mydb):
                 continue  # Skip insertion for existing keyword ID
             else:
                 raise e  # Raise other IntegrityError exceptions
+    print("Actor_movies table has been creaated successfuly")
     mydb.commit()
     
 def insert_crew(movie_id, crew, mycursor, mydb):
@@ -166,6 +202,7 @@ def insert_crew(movie_id, crew, mycursor, mydb):
                 continue  # Skip insertion for existing keyword ID
             else:
                 raise e  # Raise other IntegrityError exceptions
+    print("MovieCrew table has been creaated successfuly")
     mydb.commit()        
 
 def main():
