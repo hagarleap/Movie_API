@@ -163,7 +163,7 @@ Overview (FI)
 release_date
 Tagline (FI)
 Title
-vote_average
+vote_avg
 vote_count
 
 Movie_keywords
@@ -190,8 +190,18 @@ Cast
 Id (FK to person.id)
 
 Crew
-Id (FK to person.id)
-Job
+crew_Id (FK to person.id)
+Job_Id
+
+Jobs
+job
+job_id
+
+MovieCrew
+movie_id
+crew_id
+job_id
+
 
 Person
 Name
