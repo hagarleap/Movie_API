@@ -111,7 +111,7 @@ try:
                     "FOREIGN KEY (actor_id) REFERENCES Person(id), "
                     "FOREIGN KEY (movie_id) REFERENCES Movies(id)"
                     ")")
-
+    print("---Table Actor_movies created---") 
     mycursor.execute("CREATE TABLE IF NOT EXISTS MovieCrew ("
                     "movie_id INT, "
                     "crew_id INT, "

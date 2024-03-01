@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import errorcode
 import pandas as pd
 import csv
+from datetime import datetime
 
 def movies_table(reader, mycursor, mydb):
     for row in reader:
@@ -41,6 +42,7 @@ def movies_table(reader, mycursor, mydb):
                              "VALUES (%s, %s, %s, %s, %s, %s, %s)",
                              (id_val, overview_val, release_date_val, tagline_val,
                               title_val, vote_avg_val, vote_count_val))
+            print(f"")
         except mysql.connector.IntegrityError as e:
             if e.errno == 1062:
                 continue  # Skip insertion for existing keyword ID
@@ -89,7 +91,7 @@ def Movie_keywords_table(reader_movies_csv, mycursor, mydb):
     mydb.commit()
     
 def genres_table(reader_movies_csv, mycursor, mydb):
-    reader_movies_csv.seek(1)
+    # reader_movies_csv.seek(1)
     for row in reader_movies_csv:
         if row['genres'] and row['genres'] != '[]':
             # Extract genres data from the 'genres' column
@@ -109,7 +111,7 @@ def genres_table(reader_movies_csv, mycursor, mydb):
     mydb.commit()
     
 def Genres_movies_table(reader_movies_csv, mycursor, mydb):
-    reader_movies_csv.seek(0)
+    # reader_movies_csv.seek(0)
     for row in reader_movies_csv:
         movie_id = row['id']
         if row['genres'] and row['genres'] != '[]':
@@ -130,13 +132,13 @@ def Genres_movies_table(reader_movies_csv, mycursor, mydb):
     mydb.commit()
     
 def Person_Cast_Crew_MovieCrew_MoviesActors_tables(reader, mycursor, mydb):
-    reader.seek(1)
+    # reader.seek(1)
     for row in reader:
         cast = eval(row['cast'])
         crew = eval(row['crew'])
         movie_id = row['movie_id']
         
-        insert_cast(cast, mycursor, mydb)
+        insert_cast(movie_id, crew, mycursor, mydb)
         insert_crew(movie_id, crew, mycursor, mydb)
             
 def insert_cast(movie_id, cast, mycursor, mydb):
@@ -154,7 +156,7 @@ def insert_cast(movie_id, cast, mycursor, mydb):
                 raise e  # Raise other IntegrityError exceptions
             
         try:
-            mycursor.execute("INSERT INTO cast (id) VALUES (%s, %s, %s)", (name, id, gender))
+            mycursor.execute("INSERT INTO Cast (cast_id) VALUES (%s)", (id,))
         except mysql.connector.IntegrityError as e:
             if e.errno == 1062:
                 continue  # Skip insertion for existing keyword ID
@@ -162,7 +164,7 @@ def insert_cast(movie_id, cast, mycursor, mydb):
                 raise e  # Raise other IntegrityError exceptions
             
         try:
-            mycursor.execute("INSERT INTO Actor_movies (movie_id, crew_id) VALUES (%s, %s)", (movie_id, id))
+            mycursor.execute("INSERT INTO Actor_movies (movie_id, actor_id) VALUES (%s, %s)", (movie_id, id))
         except mysql.connector.IntegrityError as e:
             if e.errno == 1062:
                 continue  # Skip insertion for existing keyword ID
@@ -188,7 +190,7 @@ def insert_crew(movie_id, crew, mycursor, mydb):
         
             
         try:
-            mycursor.execute("INSERT INTO crew (crew_id) VALUES (%s)", (id))
+            mycursor.execute("INSERT INTO Crew (crew_id) VALUES (%s)", (id,))
         except mysql.connector.IntegrityError as e:
             if e.errno == 1062:
                 continue  # Skip insertion for existing keyword ID
@@ -208,8 +210,8 @@ def insert_crew(movie_id, crew, mycursor, mydb):
 def main():
     mydb = mysql.connector.connect(host="localhost", user="hagarleap", password="hagar30040", database="hagarleap", port=3305)
     mycursor = mydb.cursor(buffered=True)
-    movies_csv = "tmdb_5000_movies.csv"
-    crew_csv = "tmdb_5000_credits.csv"
+    movies_csv = "Movie_API/csvs/tmdb_5000_movies.csv"
+    crew_csv = "Movie_API/csvs/tmdb_5000_credits.csv"
 
     with open(movies_csv, "r", encoding="utf-8") as movie_file:
         with open(crew_csv, "r", encoding="utf-8") as crew_file:
@@ -220,11 +222,11 @@ def main():
             movie_reader = csv.DictReader(movie_file)
             crew_reader = csv.DictReader(crew_file)
             
-            movies_table(movie_reader, mycursor, mydb)
-            Keywords_table(movie_reader, mycursor, mydb)
-            Movie_keywords_table(movie_reader, mycursor, mydb)
-            genres_table(movie_reader, mycursor, mydb)
-            Genres_movies_table(movie_reader, mycursor, mydb)
+            #movies_table(movie_reader, mycursor, mydb)
+            # Keywords_table(movie_reader, mycursor, mydb)
+            # Movie_keywords_table(movie_reader, mycursor, mydb)
+            # genres_table(movie_reader, mycursor, mydb)
+            # Genres_movies_table(movie_reader, mycursor, mydb)
             Person_Cast_Crew_MovieCrew_MoviesActors_tables(crew_reader, mycursor, mydb)
 
     # Commit the changes and close the cursor and database connection
