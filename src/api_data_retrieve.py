@@ -2,6 +2,7 @@ import mysql.connector
 from mysql.connector import errorcode
 import pandas as pd
 import csv
+from datetime import datetime
 
 def movies_table(reader, mycursor, mydb):
     for row in reader:
