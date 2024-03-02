@@ -138,8 +138,11 @@ def Person_Cast_Crew_MovieCrew_MoviesActors_tables(reader, mycursor, mydb):
         crew = eval(row['crew'])
         movie_id = row['movie_id']
         
-        insert_cast(movie_id, crew, mycursor, mydb)
-        insert_crew(movie_id, crew, mycursor, mydb)
+        insert_cast(movie_id, cast, mycursor, mydb)
+        
+        # insert_crew(movie_id, crew, mycursor, mydb)
+        # print("MovieCrew table has been creaated successfuly")
+    print("Actor_movies table has been creaated successfuly")
             
 def insert_cast(movie_id, cast, mycursor, mydb):
     for person in cast:
@@ -147,30 +150,35 @@ def insert_cast(movie_id, cast, mycursor, mydb):
         id = person['id']
         gender = person['gender']
         
-        try:
-            mycursor.execute("INSERT INTO Person (name, id, gender) VALUES (%s, %s, %s)", (name, id, gender))
-        except mysql.connector.IntegrityError as e:
-            if e.errno == 1062:
-                continue  # Skip insertion for existing keyword ID
-            else:
-                raise e  # Raise other IntegrityError exceptions
+        
+        # try:
+        #     mycursor.execute("INSERT INTO Person (name, id, gender) VALUES (%s, %s, %s)", (name, id, gender))
+        # except mysql.connector.IntegrityError as e:
+        #     if e.errno == 1062:
+        #         continue  # Skip insertion for existing keyword ID
+        #     else:
+        #         print("err1 occurred")
+        #         raise e  # Raise other IntegrityError exceptions
+            
+        # try:
+        #     mycursor.execute("INSERT INTO Cast (cast_id) VALUES (%s)", (id,))
+        # except mysql.connector.IntegrityError as e:
+        #     if e.errno == 1062:
+        #         continue  # Skip insertion for existing keyword ID
+        #     else:
+        #         print("err2 occurred")
+        #         raise e  # Raise other IntegrityError exceptions
             
         try:
-            mycursor.execute("INSERT INTO Cast (cast_id) VALUES (%s)", (id,))
+            mycursor.execute("INSERT INTO Actor_movies (actor_id, movie_id) VALUES (%s, %s)", (id, movie_id))
+            print(f"{id}, {movie_id})")
         except mysql.connector.IntegrityError as e:
+            print("err occurred")
             if e.errno == 1062:
                 continue  # Skip insertion for existing keyword ID
             else:
                 raise e  # Raise other IntegrityError exceptions
-            
-        try:
-            mycursor.execute("INSERT INTO Actor_movies (movie_id, actor_id) VALUES (%s, %s)", (movie_id, id))
-        except mysql.connector.IntegrityError as e:
-            if e.errno == 1062:
-                continue  # Skip insertion for existing keyword ID
-            else:
-                raise e  # Raise other IntegrityError exceptions
-    print("Actor_movies table has been creaated successfuly")
+    
     mydb.commit()
     
 def insert_crew(movie_id, crew, mycursor, mydb):
@@ -204,7 +212,7 @@ def insert_crew(movie_id, crew, mycursor, mydb):
                 continue  # Skip insertion for existing keyword ID
             else:
                 raise e  # Raise other IntegrityError exceptions
-    print("MovieCrew table has been creaated successfuly")
+    
     mydb.commit()        
 
 def main():

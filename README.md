@@ -191,17 +191,11 @@ Id (FK to person.id)
 
 Crew
 crew_Id (FK to person.id)
-Job_Id
-
-Jobs
-job
-job_id
 
 MovieCrew
 movie_id
 crew_id
-job_id
-
+job
 
 Person
 Name
