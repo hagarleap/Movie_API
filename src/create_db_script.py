@@ -44,12 +44,12 @@ try:
 
     mycursor.execute("CREATE TABLE IF NOT EXISTS Movies ("
                     "id INT PRIMARY KEY, "
-                    "overview TEXT, "
-                    "release_date DATE, "
-                    "tagline TEXT, "
-                    "title VARCHAR(255), "
-                    "vote_avg FLOAT, "
-                    "vote_count INT, "
+                    "overview TEXT DEFAULT NULL, "
+                    "release_date DATE DEFAULT NULL, "
+                    "tagline TEXT DEFAULT NULL, "
+                    "title VARCHAR(255) DEFAULT NULL, "
+                    "vote_avg FLOAT DEFAULT NULL, "
+                    "vote_count INT DEFAULT NULL, "
                     "FULLTEXT(overview), "
                     "FULLTEXT(tagline)"
                     ")")
