@@ -221,8 +221,8 @@ def insert_crew(movie_id, crew, mycursor, mydb):
 def main():
     mydb = mysql.connector.connect(host="localhost", user="hagarleap", password="hagar30040", database="hagarleap", port=3305)
     mycursor = mydb.cursor(buffered=True)
-    movies_csv = "Movie_API/csvs/tmdb_5000_movies.csv"
-    crew_csv = "Movie_API/csvs/tmdb_5000_credits.csv"
+    movies_csv = "csvs/tmdb_5000_movies.csv"
+    crew_csv = "csvs/tmdb_5000_credits.csv"
 
     with open(movies_csv, "r", encoding="utf-8") as movie_file:
         with open(crew_csv, "r", encoding="utf-8") as crew_file:
