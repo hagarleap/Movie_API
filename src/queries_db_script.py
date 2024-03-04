@@ -148,30 +148,25 @@ def query_4(keyword):
 
 
 
-
-def query_5():
-    message = ( "SELECT"
-                    "a1.name AS name1,"
-                    "a2.name AS name2,"
-                    "COUNT(*) AS movies_together_count"
-                "FROM"
-                    "Person a1"
-                "JOIN"
-                    "Actor_movies am1 ON am1.actor_id = a1.id" 
-                "JOIN"
-                    "Actor_movies am2 ON am1.movie_id = am2.movie_id AND am1.actor_id < am2.actor_id" 
-                "JOIN"
-                    "Person a2 ON am2.actor_id = a2.id" 
-                "JOIN"
-                    "Movies m ON am1.movie_id = m.id" 
-                "WHERE"
-                    f"YEAR(a1.release_date) = {year} "
-                    f"AND a1.gender = {gender1} AND a2.gender = {gender2}"
-                "GROUP BY "
-                    "a1.id, a2.id, a1.name, a2.name"
-                "ORDER BY "
-                    "movies_together_count DESC"
-                "LIMIT 1;"
+#Sophie - 4.3.2023
+def query_5(keyword, genre):
+    message = ( "SELECT DISTINCT Movies.title, Movies.vote_avg"
+                "FROM Movies"
+                "INNER JOIN Genres_movies ON Movies.id = Genres_movies.Movie_id"
+                "INNER JOIN Genres ON Genres_movies.Genre_id = Genres.id"
+                "LEFT JOIN Movie_keywords ON Movies.id = Movie_keywords.Movie_id"
+                "LEFT JOIN Keywords ON Movie_keywords.Keyword_id = Keywords.id"
+                "WHERE MATCH(Movies.overview) AGAINST('{keyword}' IN NATURAL LANGUAGE MODE)"
+                "OR MATCH(Keywords.name) AGAINST('{keyword}' IN NATURAL LANGUAGE MODE)"
+                "AND Genres.name NOT IN ('{genre}')"
+                "AND Movies.id NOT IN ("
+                    "SELECT DISTINCT Movies.id"
+                    "FROM Movies"
+                    "INNER JOIN Genres_movies ON Movies.id = Genres_movies.Movie_id"
+                    "INNER JOIN Genres ON Genres_movies.Genre_id = Genres.id"
+                    "WHERE Genres.name = '{genre}'"
+                ")"
+                "ORDER BY Movies.vote_avg DESC;"
                 )
     try:
         results = mycursor.fetchall(message)
