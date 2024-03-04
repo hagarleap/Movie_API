@@ -130,30 +130,13 @@ def query_3():
 
 
 
-
-def query_4():
-    message = ( "SELECT"
-                    "a1.name AS name1,"
-                    "a2.name AS name2,"
-                    "COUNT(*) AS movies_together_count"
-                "FROM"
-                    "Person a1"
-                "JOIN"
-                    "Actor_movies am1 ON am1.actor_id = a1.id" 
-                "JOIN"
-                    "Actor_movies am2 ON am1.movie_id = am2.movie_id AND am1.actor_id < am2.actor_id" 
-                "JOIN"
-                    "Person a2 ON am2.actor_id = a2.id" 
-                "JOIN"
-                    "Movies m ON am1.movie_id = m.id" 
-                "WHERE"
-                    f"YEAR(a1.release_date) = {year} "
-                    f"AND a1.gender = {gender1} AND a2.gender = {gender2}"
-                "GROUP BY "
-                    "a1.id, a2.id, a1.name, a2.name"
-                "ORDER BY "
-                    "movies_together_count DESC"
-                "LIMIT 1;"
+#Sophie - 4.3.2023
+def query_4(keyword):
+    message = ( "SELECT Keywords.name AS keywords"
+                "FROM Movies"
+                "INNER JOIN Movie_keywords ON Movies.id = Movie_keywords.movie_id"
+                "INNER JOIN Keywords ON Movie_keywords.keyword_id = Keywords.id"
+                "WHERE MATCH(Keywords.name) AGAINST('{keyword}' IN NATURAL LANGUAGE MODE);"
                 )
     try:
         results = mycursor.fetchall(message)
