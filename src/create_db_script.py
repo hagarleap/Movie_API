@@ -213,6 +213,7 @@ try:
             FOREIGN KEY (movie_id) REFERENCES Movies(id), 
             FOREIGN KEY (crew_id) REFERENCES Crew(crew_id)
         )"""
+        
     ]
 
     for query in table_queries:
@@ -228,4 +229,11 @@ finally:
     # Closing cursor and database connection
     mycursor.close()
     mydb.close()
+    
 
+#         """ALTER TABLE Movies DROP INDEX fulltext_index_name;""",
+#         """ALTER TABLE Movies
+#         ADD FULLTEXT INDEX overview_tagline_title (overview, tagline, title);"""    
+
+        # """ CREATE INDEX crew_jobs ON MovieCrew (job, crew_id)""",
+        # """ CREATE INDEX movie_rating ON Movies (id, vote_avg);""",

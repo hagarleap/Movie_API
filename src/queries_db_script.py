@@ -31,7 +31,8 @@ def query_1(mycursor, gender1, gender2, year):
                 "LIMIT 1;"
                 )
     try:
-        results = mycursor.fetchall(message)
+        mycursor.execute(message)
+        results = mycursor.fetchall()
     except mysql.connector.Error as err:
         print("Failed fetching data: {}".format(err))
         exit(1)
@@ -52,7 +53,7 @@ def query_2(mycursor, genre):
                     "JOIN"
                         "Movies m ON gm.movies_id = m.id"
                     "WHERE"
-                        f"g.name = {genre}"
+                        f"g.name = '{genre}'"
                     "GROUP BY"
                         "g.name"
                 ")"
@@ -87,7 +88,8 @@ def query_2(mycursor, genre):
                 "LIMIT 5;"
                 )
     try:
-        results = mycursor.fetchall(message)
+        mycursor.execute(message)
+        results = mycursor.fetchall()
     except mysql.connector.Error as err:
         print("Failed fetching data: {}".format(err))
         exit(1)
@@ -96,83 +98,112 @@ def query_2(mycursor, genre):
     
 
 
-def query_3():
-    message = ( "SELECT"
-                    "a1.name AS name1,"
-                    "a2.name AS name2,"
-                    "COUNT(*) AS movies_together_count"
-                "FROM"
-                    "Person a1"
-                "JOIN"
-                    "Actor_movies am1 ON am1.actor_id = a1.id" 
-                "JOIN"
-                    "Actor_movies am2 ON am1.movie_id = am2.movie_id AND am1.actor_id < am2.actor_id" 
-                "JOIN"
-                    "Person a2 ON am2.actor_id = a2.id" 
-                "JOIN"
-                    "Movies m ON am1.movie_id = m.id" 
-                "WHERE"
-                    f"YEAR(a1.release_date) = {year} "
-                    f"AND a1.gender = {gender1} AND a2.gender = {gender2}"
-                "GROUP BY "
-                    "a1.id, a2.id, a1.name, a2.name"
-                "ORDER BY "
-                    "movies_together_count DESC"
-                "LIMIT 1;"
+def query_3(mycursor, job):
+    message = ( f""" SELECT
+                    p.name AS crewName,
+                    AVG(m.vote_avg) AS AvgRating
+                FROM
+                    Person p
+                JOIN
+                    MovieCrew mc ON mc.crew_id = p.id
+                JOIN
+                    Movies m ON mc.movie_id = m.id
+
+                WHERE
+                    mc.job = '{job}'
+                    AND m.vote_count > (SELECT
+                                        AVG(m.vote_count) AS avg_vote_count
+                                    FROM
+                                        Movies m
+                                    ) 
+                    AND m.vote_avg != 0
+                    
+                GROUP BY
+                    mc.crew_id
+                ORDER BY
+                    AvgRating ASC
+                LIMIT 5; """
                 )
     try:
-        results = mycursor.fetchall(message)
+        mycursor.execute(message)
+        results = mycursor.fetchall()
     except mysql.connector.Error as err:
         print("Failed fetching data: {}".format(err))
         exit(1)
-    #TODO index on release year!
     return results
 
 
 
-#Sophie - 4.3.2023
-def query_4(keyword):
-    message = ( "SELECT Keywords.name AS keywords"
-                "FROM Movies"
-                "INNER JOIN Movie_keywords ON Movies.id = Movie_keywords.movie_id"
-                "INNER JOIN Keywords ON Movie_keywords.keyword_id = Keywords.id"
-                "WHERE MATCH(Keywords.name) AGAINST('{keyword}' IN NATURAL LANGUAGE MODE);"
-                )
+def query_4(mycursor, keywords):
+    message =  f"""SELECT 
+                    m.title AS Title,
+                    YEAR(m.release_date) AS ReleaseYear,
+                    m.vote_avg Rating
+                FROM 
+                    Movies m
+                WHERE 
+                    MATCH (m.overview, m.tagline, m.title) AGAINST ('{keywords}' IN NATURAL LANGUAGE MODE) AND
+                    m.release_date IS NOT NULL
+                ORDER BY ReleaseYear DESC;"""
+                
     try:
-        results = mycursor.fetchall(message)
+        mycursor.execute(message)
+        results = mycursor.fetchall()
     except mysql.connector.Error as err:
         print("Failed fetching data: {}".format(err))
         exit(1)
-    #TODO index on release year!
     return results
 
 
 
-#Sophie - 4.3.2023
-def query_5(keyword, genre):
-    message = ( "SELECT DISTINCT Movies.title, Movies.vote_avg"
-                "FROM Movies"
-                "INNER JOIN Genres_movies ON Movies.id = Genres_movies.Movie_id"
-                "INNER JOIN Genres ON Genres_movies.Genre_id = Genres.id"
-                "LEFT JOIN Movie_keywords ON Movies.id = Movie_keywords.Movie_id"
-                "LEFT JOIN Keywords ON Movie_keywords.Keyword_id = Keywords.id"
-                "WHERE MATCH(Movies.overview) AGAINST('{keyword}' IN NATURAL LANGUAGE MODE)"
-                "OR MATCH(Keywords.name) AGAINST('{keyword}' IN NATURAL LANGUAGE MODE)"
-                "AND Genres.name NOT IN ('{genre}')"
-                "AND Movies.id NOT IN ("
-                    "SELECT DISTINCT Movies.id"
-                    "FROM Movies"
-                    "INNER JOIN Genres_movies ON Movies.id = Genres_movies.Movie_id"
-                    "INNER JOIN Genres ON Genres_movies.Genre_id = Genres.id"
-                    "WHERE Genres.name = '{genre}'"
-                ")"
-                "ORDER BY Movies.vote_avg DESC;"
-                )
+def query_5(mycursor, title, is_genre):
+    #### if genre, fetch random movie title from genre###
+    if is_genre:
+        message = f"""SELECT 
+                            m.title
+                        FROM 
+                            Movies m
+                        JOIN
+                            Genres_movies gm ON gm.movie_id = m.id
+                        JOIN
+                            Genres g ON g.id = gm.genre_id
+                        JOIN 
+                            Movie_keywords mk ON m.id = mk.movie_id
+                        Where
+                            g.name = '{title}'
+                        ORDER BY RAND()
+                        LIMIT 1;   """
+                    
+        try:
+            mycursor.execute(message)
+            title = mycursor.fetchall()[0]
+        except mysql.connector.Error as err:
+            print("Failed fetching data: {}".format(err))
+            exit(1)   
+            
+                         
+    message_1 = f"""SELECT 
+                        k.name
+                    FROM 
+                        Keywords k
+                    JOIN 
+                        Movie_keywords mk ON k.id = mk.keyword_id
+                    JOIN 
+                        Movies m on mk.movie_id = m.id
+                    Where
+                        m.title = '{title}' """
+               
+                
     try:
-        results = mycursor.fetchall(message)
+        mycursor.execute(message_1)
+        keywords = mycursor.fetchall()
     except mysql.connector.Error as err:
         print("Failed fetching data: {}".format(err))
         exit(1)
-    #TODO index on release year!
-    return results
+    
+    delimiter = ' '
+
+    keywords = delimiter.join(word for word in keywords)    
+            
+    return query_4(mycursor, keywords)
     
