@@ -64,6 +64,13 @@ def main():
         ### Ex 2: Illegal lookup
         print(queries.query_4(mycursor, "CURSE WORDS @#$%&!"))    
           
+######### Bad "similar to" Movie Reccomendations #########
+        ### Ex 1: Similar to "The Godfather"
+        print(queries.query_4(mycursor, "The Godfather"))
+        ### Ex 2: Similar to Animation genre
+        print(queries.query_4(mycursor, "Animation"))   
+        ### Ex 3: Illegal lookup
+        print(queries.query_4(mycursor, ":-)"))    
     except:
         print("Failed to execute query!")
         
