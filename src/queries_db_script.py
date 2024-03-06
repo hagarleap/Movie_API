@@ -1,11 +1,27 @@
 from mysql.connector import errorcode
 import mysql.connector
 
+######### Predfined Fields ######### 
+genders = {'female':1, 'male': 2, 'surprise': 0}
+genres = ["Adventure", "Fantasy", "Animation", "Drama", "Horror", "Action", "Comedy", "History", "Western", "Thriller", "Crime", "Documentary", "Science Fiction", "Mystery", "Music", "Romance", "Family", "War", "Foreign", "TV Movie"]
+max_yr = 2017
+min_yr = 1916
+
+
 
 ######### Actor besties by gender and year ########
 def query_1(mycursor, gender1, gender2, year):
     # Actor besties by gender :
     # Get actors frequently starring together
+    try:
+        gender1 = genders[gender1]
+        gender2 = genders[gender2]
+    except:
+        print("Illegal gender value!")
+        return
+    if not (min_yr<= year <= max_yr):
+        print(f"No movie data available for the year {year}")
+        return
     
     message = ( "SELECT"
                     "a1.name AS name1,"
@@ -42,6 +58,10 @@ def query_1(mycursor, gender1, gender2, year):
 
 
 def query_2(mycursor, genre):
+    if genre not in genres:
+        print("Illegal genre value!")
+        return
+            
     message = ( "WITH GenreAvgRating AS ("
                     "SELECT"
                         "g.name AS genre,"
@@ -99,6 +119,10 @@ def query_2(mycursor, genre):
 
 
 def query_3(mycursor, job):
+    ### quality check: no odd chars ###
+    if not job.isalpha(): 
+        print('Contains illegal characters!')
+        return
     message = ( f""" SELECT
                     p.name AS crewName,
                     AVG(m.vote_avg) AS AvgRating
@@ -130,6 +154,10 @@ def query_3(mycursor, job):
     except mysql.connector.Error as err:
         print("Failed fetching data: {}".format(err))
         exit(1)
+        
+    if not results:
+        print(f"Your search for '{job}' did not have any matches")
+        return
     return results
 
 
@@ -152,6 +180,9 @@ def query_4(mycursor, keywords):
     except mysql.connector.Error as err:
         print("Failed fetching data: {}".format(err))
         exit(1)
+    if not results:
+        print(f"Your search for '{keywords}' did not have any matches")
+        return
     return results
 
 
@@ -205,5 +236,9 @@ def query_5(mycursor, title, is_genre):
 
     keywords = delimiter.join(word for word in keywords)    
             
-    return query_4(mycursor, keywords)
+    results = query_4(mycursor, keywords)
+    
+    if not results:
+        print(f"Your search for '{title}' did not have any matches")
+        return
     
