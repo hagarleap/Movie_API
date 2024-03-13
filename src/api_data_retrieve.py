@@ -52,7 +52,6 @@ def movies_table(reader, mycursor, mydb):
     mydb.commit()
     
 def Keywords_table(reader_movies_csv, mycursor, mydb):
-    #reader_movies_csv.seek(1)
     for row in reader_movies_csv:
         if row['keywords']:
             # Extract keywords data from the 'keywords' column
@@ -71,7 +70,6 @@ def Keywords_table(reader_movies_csv, mycursor, mydb):
     mydb.commit()
     
 def Movie_keywords_table(reader_movies_csv, mycursor, mydb):
-    #reader_movies_csv.seek(1)
     for row in reader_movies_csv:
         if row['keywords']:
             # Extract keywords data from the 'keywords' column
@@ -89,7 +87,6 @@ def Movie_keywords_table(reader_movies_csv, mycursor, mydb):
     mydb.commit()
     
 def genres_table(reader_movies_csv, mycursor, mydb):
-    # reader_movies_csv.seek(1)
     for row in reader_movies_csv:
         if row['genres'] and row['genres'] != '[]':
             # Extract genres data from the 'genres' column
@@ -108,7 +105,6 @@ def genres_table(reader_movies_csv, mycursor, mydb):
     mydb.commit()
     
 def Genres_movies_table(reader_movies_csv, mycursor, mydb):
-    # reader_movies_csv.seek(0)
     for row in reader_movies_csv:
         movie_id = row['id']
         if row['genres'] and row['genres'] != '[]':
@@ -127,8 +123,7 @@ def Genres_movies_table(reader_movies_csv, mycursor, mydb):
                         raise e  # Raise other IntegrityError exceptions
     mydb.commit()
     
-def Person_Cast_Crew_MovieCrew_MoviesActors_tables(reader, mycursor, mydb):
-    # reader.seek(1)
+def Person_Cast_MovieCrew_ActorMovies_tables(reader, mycursor, mydb):
     for row in reader:
         cast = eval(row['cast'])
         crew = eval(row['crew'])
@@ -194,8 +189,8 @@ def insert_crew(movie_id, crew, mycursor, mydb):
 def main():
     mydb = mysql.connector.connect(host="localhost", user="hagarleap", password="hagar30040", database="hagarleap", port=3305)
     mycursor = mydb.cursor(buffered=True)
-    movies_csv = "csvs/tmdb_5000_movies.csv"
-    crew_csv = "csvs/tmdb_5000_credits.csv"
+    movies_csv = "data/tmdb_5000_movies.csv"
+    crew_csv = "data/tmdb_5000_credits.csv"
 
     with open(movies_csv, "r", encoding="utf-8") as movie_file:
         with open(crew_csv, "r", encoding="utf-8") as crew_file:
@@ -206,12 +201,12 @@ def main():
             movie_reader = csv.DictReader(movie_file)
             crew_reader = csv.DictReader(crew_file)
             
-            #movies_table(movie_reader, mycursor, mydb)
-            # Keywords_table(movie_reader, mycursor, mydb)
-            # Movie_keywords_table(movie_reader, mycursor, mydb)
-            # genres_table(movie_reader, mycursor, mydb)
-            # Genres_movies_table(movie_reader, mycursor, mydb)
-            Person_Cast_Crew_MovieCrew_MoviesActors_tables(crew_reader, mycursor, mydb)
+            movies_table(movie_reader, mycursor, mydb)
+            Keywords_table(movie_reader, mycursor, mydb)
+            Movie_keywords_table(movie_reader, mycursor, mydb)
+            genres_table(movie_reader, mycursor, mydb)
+            Genres_movies_table(movie_reader, mycursor, mydb)
+            Person_Cast_MovieCrew_ActorMovies_tables(crew_reader, mycursor, mydb)
 
     # Commit the changes and close the cursor and database connection
 

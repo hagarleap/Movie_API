@@ -68,17 +68,17 @@ try:
             job VARCHAR(100), 
             PRIMARY KEY (movie_id, crew_id), 
             FOREIGN KEY (movie_id) REFERENCES Movies(id), 
-            FOREIGN KEY (crew_id) REFERENCES Crew(crew_id)
-        )""",
-        """ CREATE INDEX actor_id ON Movies (vote_count);""",
-
-        
+            FOREIGN KEY (crew_id) REFERENCES Person(id)
+        )"""
     ]
-
+    
+    #execute queries
     for query in table_queries:
-        #table_name = query.split()[5] 
-        mycursor.execute(query)
-        #print(f"---Table {table_name} has been created---")
+        try:
+            mycursor.execute(query)
+        except mysql.connector.Error as err:
+            print("Failed creating table: {}".format(err))
+            exit(1)
 
 except mysql.connector.Error as err:
     print("Failed creating database: {}".format(err))
@@ -88,11 +88,3 @@ finally:
     # Closing cursor and database connection
     mycursor.close()
     mydb.close()
-    
-
-#         """ALTER TABLE Genres_movies DROP INDEX genre_id;""",
-#         """ALTER TABLE Movies
-#         ADD FULLTEXT INDEX overview_tagline_title (overview, tagline, title);"""    
-
-        # """ CREATE INDEX crew_jobs ON MovieCrew (job, crew_id)""",
-        # """ CREATE INDEX movie_rating ON Movies (id, vote_avg);""",

@@ -9,8 +9,8 @@ min_yr = 1916
 
 ######### Actor besties ########
 def query_1(mycursor, gender1, gender2, year):
-    # Actor besties by gender :
-    # Get actors frequently starring together
+    
+    ### quality check: compare gender and year to legit values ###
     try:
         gender1 = genders[gender1]
         gender2 = genders[gender2]
@@ -22,6 +22,7 @@ def query_1(mycursor, gender1, gender2, year):
     except:
         return "Illegal year value!"
     
+    #query
     message = (f"""SELECT
                     a1.name AS name1,
                     a2.name AS name2,
@@ -57,9 +58,12 @@ def query_1(mycursor, gender1, gender2, year):
 
 
 def query_2(mycursor, genre):
+    
+    ### quality check: compare genre to legit values ###
     if genre not in genres:
         return "Illegal genre value!"
-            
+    
+    #query        
     message = ( f"""WITH GenreAvgRating AS (
                         SELECT
                             g.id AS genre_id,
@@ -116,9 +120,12 @@ def query_2(mycursor, genre):
 
 
 def query_3(mycursor, job):
+    
     ### quality check: no odd chars ###
     if not job.isalpha(): 
         return 'Contains illegal characters!'
+    
+    #query
     message = ( f""" SELECT
                     p.name AS crewName,
                     AVG(m.vote_avg) AS AvgRating
@@ -158,10 +165,12 @@ def query_3(mycursor, job):
 
 
 def query_4(mycursor, keywords):
+    
     ### quality check: no odd chars ###
     if not keywords.replace(" ", "").isalpha():
         return 'Contains illegal characters!'
     
+    #query
     message =  f"""SELECT 
                     m.title AS Title,
                     YEAR(m.release_date) AS ReleaseYear,
@@ -221,7 +230,7 @@ def query_5(mycursor, title, is_genre):
             print("Failed fetching data: {}".format(err))
             exit(1)                    
             
-                         
+    ### fetch keywords for title ###                     
     message3 = f"""SELECT 
                         k.name
                     FROM 
@@ -245,6 +254,8 @@ def query_5(mycursor, title, is_genre):
     delimiter = ' '
 
     keywords = delimiter.join(word[0] for word in keywords)      
+    
+    ### run query 4, it does a nice search ###
     results = query_4(mycursor, keywords)
     
     if not results:
