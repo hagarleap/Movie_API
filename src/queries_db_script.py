@@ -220,7 +220,7 @@ def query_5(mycursor, title, is_genre):
                         JOIN
                             Genres_movies gm ON gm.movie_id = m.id
                         Where
-                            g.id = '{genre_id}'
+                            gm.genre_id = '{genre_id}'
                         ORDER BY RAND()
                         LIMIT 1;   """
         try:
