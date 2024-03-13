@@ -66,11 +66,11 @@ def main():
           
 ######### Bad "similar to" Movie Reccomendations #########
         ### Ex 1: Similar to "The Godfather"
-        print(queries.query_4(mycursor, "The Godfather"))
+        print(queries.query_5(mycursor, "The Godfather", False))
         ### Ex 2: Similar to Animation genre
-        print(queries.query_4(mycursor, "Animation"))   
+        print(queries.query_5(mycursor, "Animation", True))   
         ### Ex 3: Illegal lookup
-        print(queries.query_4(mycursor, ":-)"))    
+        print(queries.query_5(mycursor, ":-)", False))    
     except:
         print("Failed to execute query!")
         

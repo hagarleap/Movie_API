@@ -7,7 +7,7 @@ genres = ["Adventure", "Fantasy", "Animation", "Drama", "Horror", "Action", "Com
 max_yr = 2017
 min_yr = 1916
 
-######### Actor besties by gender and year ########
+######### Actor besties ########
 def query_1(mycursor, gender1, gender2, year):
     # Actor besties by gender :
     # Get actors frequently starring together
@@ -16,8 +16,11 @@ def query_1(mycursor, gender1, gender2, year):
         gender2 = genders[gender2]
     except:
         return "Illegal gender value!"
-    if not (min_yr<= year <= max_yr):
-        return f"No movie data available for the year {year}"
+    try:
+        if not (min_yr<= year <= max_yr):
+            return f"No movie data available for the year {year}"
+    except:
+        return "Illegal year value!"
     
     message = (f"""SELECT
                     a1.name AS name1,
@@ -34,7 +37,7 @@ def query_1(mycursor, gender1, gender2, year):
                 JOIN
                     Movies m ON am1.movie_id = m.id
                 WHERE
-                    YEAR(m.release_date) = {year}
+                    m.release_date >= '{year}-01-01' AND m.release_date < '{year}-01-01' + INTERVAL 1 YEAR
                     AND a1.gender = {gender1} AND a2.gender = {gender2}
                     AND NOT a1.id = a2.id
                 GROUP BY
@@ -190,30 +193,36 @@ def query_5(mycursor, title, is_genre):
     
     #### if genre, fetch random movie title from genre###
     if is_genre:
-        message = f"""SELECT 
+        message1 =f"""SELECT
+                        g.id
+                    FROM Genres g
+                    WHERE g.name = '{title}';"""
+        try:
+            mycursor.execute(message1)
+            genre_id = mycursor.fetchall()[0][0]
+        except mysql.connector.Error as err:
+            print("Failed fetching data: {}".format(err))
+            exit(1)  
+            
+        message2 = f"""SELECT 
                             m.title
                         FROM 
                             Movies m
                         JOIN
                             Genres_movies gm ON gm.movie_id = m.id
-                        JOIN
-                            Genres g ON g.id = gm.genre_id
-                        JOIN 
-                            Movie_keywords mk ON m.id = mk.movie_id
                         Where
-                            g.name = '{title}'
+                            g.id = '{genre_id}'
                         ORDER BY RAND()
                         LIMIT 1;   """
-                    
         try:
-            mycursor.execute(message)
-            title = mycursor.fetchall()[0]
+            mycursor.execute(message2)
+            title = mycursor.fetchall()[0][0]
         except mysql.connector.Error as err:
             print("Failed fetching data: {}".format(err))
-            exit(1)   
+            exit(1)                    
             
                          
-    message_1 = f"""SELECT 
+    message3 = f"""SELECT 
                         k.name
                     FROM 
                         Keywords k
@@ -227,7 +236,7 @@ def query_5(mycursor, title, is_genre):
                
                 
     try:
-        mycursor.execute(message_1)
+        mycursor.execute(message3)
         keywords = mycursor.fetchall()
     except mysql.connector.Error as err:
         print("Failed fetching data: {}".format(err))
@@ -235,10 +244,11 @@ def query_5(mycursor, title, is_genre):
     
     delimiter = ' '
 
-    keywords = delimiter.join(word for word in keywords)    
-            
+    keywords = delimiter.join(word[0] for word in keywords)      
     results = query_4(mycursor, keywords)
     
     if not results:
         return f"Your search for '{title}' did not have any matches"
+    else:
+        return results
     

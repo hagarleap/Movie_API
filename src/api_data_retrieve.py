@@ -68,7 +68,6 @@ def Keywords_table(reader_movies_csv, mycursor, mydb):
                         continue  # Skip insertion for existing keyword ID
                     else:
                         raise e  # Raise other IntegrityError exceptions
-    print("Keyword table has been creaated successfuly")
     mydb.commit()
     
 def Movie_keywords_table(reader_movies_csv, mycursor, mydb):
@@ -87,7 +86,6 @@ def Movie_keywords_table(reader_movies_csv, mycursor, mydb):
                         continue  # Skip insertion for existing keyword ID
                     else:
                         raise e  # Raise other IntegrityError exceptions
-    print("Movie_keywords table has been creaated successfuly")
     mydb.commit()
     
 def genres_table(reader_movies_csv, mycursor, mydb):
@@ -107,7 +105,6 @@ def genres_table(reader_movies_csv, mycursor, mydb):
                         continue  # Skip insertion for existing genre ID
                     else:
                         raise e  # Raise other IntegrityError exceptions
-    print("Genres table has been creaated successfuly")
     mydb.commit()
     
 def Genres_movies_table(reader_movies_csv, mycursor, mydb):
@@ -128,7 +125,6 @@ def Genres_movies_table(reader_movies_csv, mycursor, mydb):
                         continue  # Skip insertion for existing genre_id, movie_id pair
                     else:
                         raise e  # Raise other IntegrityError exceptions
-    print("Genres_movies table has been creaated successfuly")
     mydb.commit()
     
 def Person_Cast_Crew_MovieCrew_MoviesActors_tables(reader, mycursor, mydb):
@@ -138,11 +134,9 @@ def Person_Cast_Crew_MovieCrew_MoviesActors_tables(reader, mycursor, mydb):
         crew = eval(row['crew'])
         movie_id = row['movie_id']
         
-        # insert_cast(movie_id, cast, mycursor, mydb)
+        insert_cast(movie_id, cast, mycursor, mydb)
         
         insert_crew(movie_id, crew, mycursor, mydb)
-    print("MovieCrew table has been creaated successfuly")
-    # print("Actor_movies table has been creaated successfuly")
             
 def insert_cast(movie_id, cast, mycursor, mydb):
     for person in cast:
@@ -158,15 +152,6 @@ def insert_cast(movie_id, cast, mycursor, mydb):
                 continue  # Skip insertion for existing keyword ID
             else:
                 print("err1 occurred")
-                raise e  # Raise other IntegrityError exceptions
-            
-        try:
-            mycursor.execute("INSERT INTO Cast (cast_id) VALUES (%s)", (id,))
-        except mysql.connector.IntegrityError as e:
-            if e.errno == 1062:
-                continue  # Skip insertion for existing keyword ID
-            else:
-                print("err2 occurred")
                 raise e  # Raise other IntegrityError exceptions
             
         try:
@@ -189,7 +174,6 @@ def insert_crew(movie_id, crew, mycursor, mydb):
         job = person['job']
         
         try:
-            print("1")
             mycursor.execute("INSERT INTO Person (name, id, gender) VALUES (%s, %s, %s)", (name, id, gender))
         except mysql.connector.IntegrityError as e:
             if e.errno == 1062:
@@ -197,18 +181,7 @@ def insert_crew(movie_id, crew, mycursor, mydb):
             else:
                 raise e  # Raise other IntegrityError exceptions
         
-            
         try:
-            print("2")
-            mycursor.execute("INSERT INTO Crew (crew_id) VALUES (%s)", (id,))
-        except mysql.connector.IntegrityError as e:
-            if e.errno == 1062:
-                pass  # Skip insertion for existing keyword ID
-            else:
-                raise e  # Raise other IntegrityError exceptions
-        
-        try:
-            print("3")
             mycursor.execute("INSERT INTO MovieCrew (movie_id, crew_id, job) VALUES (%s, %s, %s)", (movie_id, id, job))
         except mysql.connector.IntegrityError as e:
             if e.errno == 1062:
